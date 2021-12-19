@@ -1,7 +1,6 @@
 {
   "name": "scic-vegtable-server",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -17,5 +16,15 @@
     "express": "^4.17.1",
     "express-fileupload": "^1.2.1",
     "mongodb": "^4.2.2"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TareqAhsan/Fresh-vegetable-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TareqAhsan/Fresh-vegetable-server/issues"
+  },
+  "homepage": "https://github.com/TareqAhsan/Fresh-vegetable-server#readme",
+  "description": ""
 }
