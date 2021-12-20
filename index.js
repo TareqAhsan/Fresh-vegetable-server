@@ -26,6 +26,8 @@ async function run() {
     const database = client.db("vegetableShop");
     const productCollection = database.collection("FreshProduct");
     const orderCollection = database.collection("allOrders");
+    const usersCollection = database.collection('users')
+    const reviewCollection = database.collection('reviews');
 
     //add Product to Db
     app.post("/addproduct", async (req, res) => {
@@ -105,7 +107,8 @@ async function run() {
     app.get("/product/myOrder", async (req, res) => {
       const email = req.query.email;
       // console.log(email);
-      const result = await orderCollection.find({}).toArray();
+      const filter = {email:email}
+      const result = await orderCollection.find(filter).toArray();
       // console.log(result)
       res.send(result);
     });
@@ -123,6 +126,88 @@ async function run() {
       const id = req.params.id 
       const filter = {_id:ObjectId(id)}
       const result = await productCollection.deleteOne(filter)
+      res.send(result)
+    })
+
+  //manageAll orders
+  app.get('/manageallOrder',async(req,res)=>{
+    const result = await orderCollection.find({}).toArray()
+    res.send(result)
+  })
+
+  // update the status
+  app.put('/status/update/:id',async(req,res)=>{
+    const status = req.body.status
+    const id = req.params.id 
+    const filter = {_id:ObjectId(id)}
+    const updateDoc = { $set: { status: status } };
+    const result = await orderCollection.updateOne(filter,updateDoc)
+    res.send(result)
+  })
+
+  // amangealloreder cancel an order
+  app.delete('/manageallorder/cancel/:id',async(req,res)=>{
+    const id = req.params.id 
+    const filter = {_id:ObjectId(id)}
+    const result = await orderCollection.deleteOne(filter)
+    res.send(result)
+  })
+//
+
+    // save  user to database
+    app.post('/users',async(req,res)=>{
+      const body = req.body
+      const result = await usersCollection.insertOne(body)
+      // console.log(result)
+      res.send(result)
+    })
+    //save to user in db from google signin
+    app.put('/users',async(req,res)=>{
+      const user = req.body
+      const email = req.body.email
+      const filter = {email:email}
+      const options = {upsert:true}
+      const data = {$set:user}
+     const result = await usersCollection.updateOne(filter, data, options);
+    //  console.log(result)
+     res.send(result)
+    })
+
+    //make admin 
+    app.put('/users/makeadmin',async(req,res)=>{
+      const email = req.body.email
+      const filter = {email:email}
+      const updateDoc = {$set:{role:'admin'}}
+      const result = await usersCollection.updateOne(filter,updateDoc)
+      res.json(result)
+    })
+
+    //Check admin or not
+    app.get('/users/admin/:email',async(req,res)=>{
+      const email = req.params.email
+      console.log('admin hitting')
+      const filter = {email}
+      const result = await usersCollection.findOne(filter)
+      console.log(result)
+      let isAdmin = false
+      if(result?.role==='admin'){
+        isAdmin=true
+      }
+      res.send({admin:isAdmin})
+    })
+
+    //review from dashboard
+    app.post('/review',async(req,res)=>{
+      const body = req.body
+      const result = await reviewCollection.insertOne(body)
+      console.log(result)
+      res.send(result)
+    })
+
+    //get all review
+    app.get('/getreview',async(req,res)=>{
+      console.log('reviewsa')
+      const result = await reviewCollection.find({}).toArray()
       res.send(result)
     })
     //
